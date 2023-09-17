@@ -17,7 +17,8 @@ class MyApp extends StatelessWidget {
         title: 'Test App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          //colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
         home: MyHomePage(),
       ),
@@ -38,20 +39,25 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) { // widget are small GUI components
     var appState = context.watch<MyAppState>();  
-    var pair = appState.current;                 // ← Add this.
+    var pair = appState.current;                 
+
+    
 
     return Scaffold(
-      body: Column(
-        children: [
-          Text('A random AWESOME idea:'),
-          BigCard(pair: pair),                // ← Change to this.
-          ElevatedButton(
-            onPressed: () {
-              appState.getNext();
-            },
-            child: Text('Next'),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // align text axis to center horizontally
+          children: [
+            Text('Press button to generate random text'),
+            BigCard(pair: pair),                
+            ElevatedButton(
+              onPressed: () {
+                appState.getNext();
+              },
+              child: Text('Change!'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -69,12 +75,23 @@ class BigCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context); 
 
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+
     return Card(
-      color: theme.colorScheme.primary, // Adding color theme to text box
+      color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Text(pair.asLowerCase),
-      )
+        
+        // below changes for screen readers
+        // changes text semantically so cheaphead becomes cheap head instead of being pronounced cheafead
+        child: Text(
+          pair.asLowerCase,
+          style: style,
+          semanticsLabel: "${pair.first} ${pair.second}",
+        ),
+      ),
     );
   }
 }
