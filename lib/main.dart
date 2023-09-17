@@ -33,15 +33,31 @@ class MyAppState extends ChangeNotifier {
     current = WordPair.random();
     notifyListeners();
   }
+
+  var favorites = <WordPair>[];
+
+  void toggleFavorite() { // logic of "like" button
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) { // widget are small GUI components
     var appState = context.watch<MyAppState>();  
-    var pair = appState.current;                 
+    var pair = appState.current; 
 
-    
+    IconData icon; // like button change fill if list contains favourite
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }                
 
     return Scaffold(
       body: Center(
@@ -50,11 +66,23 @@ class MyHomePage extends StatelessWidget {
           children: [
             Text('Press button to generate random text'),
             BigCard(pair: pair),                
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext();
-              },
-              child: Text('Change!'),
+            Row(
+              mainAxisSize: MainAxisSize.min, 
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: Text("Like")
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext();
+                  },
+                  child: Text('Change!'),
+                ),
+              ],
             ),
           ],
         ),
